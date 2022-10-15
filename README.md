@@ -8,7 +8,7 @@
 
 ### About
 
-A **work in progress** JavaScript/TypeScript library for remote control and bot creation for the [Minecraft Console Client](https://github.com/MCCTeam/Minecraft-Console-Client) using RPC over [WebSocket](https://en.wikipedia.org/wiki/WebSocket) that can be used in NodeJS and Browser/Electron.
+A **work in progress** JavaScript/TypeScript library for remote control and bot creation for the [Minecraft Console Client](https://github.com/MCCTeam/Minecraft-Console-Client) using RPC over [WebSocket](https://en.wikipedia.org/wiki/WebSocket) that can be used in Node JS.
 
 ### NOTE
 
@@ -34,7 +34,7 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
 
 #### Planned features / Roadmap
 
--   [ ] Asynchronous RPC
+-   [x] Asynchronous RPC
 
     A part of the base work for this feature has been implemented already, it's currently being worked on.
 
@@ -49,6 +49,8 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
     -   [ ] Entities
     -   [ ] Inventories
     -   [ ] Movement
+
+-   [ ] Front end support
 
 -   [ ] Deno support
 
