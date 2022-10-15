@@ -36,16 +36,11 @@ class MccJsClient {
             }
         }
 
-        if (options.password) {
-            if (options.password.trim().length === 0) {
-                throw new Error("Please provide a valid password!");
-            }
-        }
+        if (options.password && options.password.trim().length === 0)
+            throw new Error("Please provide a valid password!");
 
-        if (options.chatBot) {
-            if (!(options.chatBot instanceof ChatBot))
-                throw new Error("Please provide a valid instance of ChatBot!");
-        } else throw new Error("Please provide a valid instance of ChatBot!");
+        if (!options.chatBot || options.chatBot && !(options.chatBot instanceof ChatBot))
+            throw new Error("Please provide a valid instance of ChatBot!");
 
         this.host = options.host;
         this.port = options.port;
@@ -79,7 +74,7 @@ class MccJsClient {
             const data = JSON.parse(parsed.data);
             this.handleEvent(parsed.event, data);
         } catch (e) {
-            if (this.isMethodPresent("OnEventError"))
+            if (this.isMethodPresent("_OnEventError"))
                 this.chatBot._OnEventError!(event, `Error when parsing: '${event.data}'`);
         }
     }
@@ -151,7 +146,7 @@ class MccJsClient {
         // or when you want to handle events in a custom way, 
         // or you're using an older version of MCC.js and want to catch new events without updating
         if (!this.isMethodPresent(event)) {
-            if (this.isMethodPresent("OnUnhandledEvent"))
+            if (this.isMethodPresent("_OnUnhandledEvent"))
                 this.chatBot._OnUnhandledEvent!(event, data);
 
             return;
