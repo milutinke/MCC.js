@@ -38,7 +38,7 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
 
 #### Planned features / Roadmap
 
-    A part of the base work for this feature has been implemented already, it's currently being worked on.
+A part of the base work for this feature has been implemented already, it's currently being worked on.
 
 -   [ ] Auto-Reconnect
 
