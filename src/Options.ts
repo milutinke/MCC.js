@@ -8,6 +8,7 @@ type Options = {
     sessionName?: string,
     loggingEnabled: boolean,
     logger?: Logger,
+    executionTimeout?: number,
     chatBot: ChatBot
 };
 

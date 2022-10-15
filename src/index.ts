@@ -3,10 +3,6 @@ import Logger from './Logger';
 import States from './States';
 import ConsoleLogger from "./ConsoleLogger";
 import ChatBot from './ChatBot';
-import WebSocket from "isomorphic-ws";
-
-import { Entity } from './MccTypes/Entity';
-import Location from './MccTypes/Location';
 import AuthenticateCommand from './Commands/AuthenticateCommand';
 import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand';
 
@@ -15,6 +11,7 @@ class MccJsClient {
     private state: States = States.DISCONNECTED;
     private loggingEnabled: boolean = false;
     private logger: Logger;
+    private executionTimeout: number;
     private chatBot: ChatBot;
 
     private host: string;
@@ -42,7 +39,7 @@ class MccJsClient {
         }
 
         if (options.chatBot) {
-            if (!(options.chatBot['RegisterChatBot'] && typeof options.chatBot['RegisterChatBot'] === 'function'))
+            if (!(options.chatBot instanceof ChatBot))
                 throw new Error("Please provide a valid instance of ChatBot!");
         } else throw new Error("Please provide a valid instance of ChatBot!");
 
@@ -52,28 +49,14 @@ class MccJsClient {
         this.sessionName = options.sessionName;
         this.loggingEnabled = options.loggingEnabled;
         this.logger = options.logger || new ConsoleLogger();
+        this.executionTimeout = options.executionTimeout || 15;
         this.chatBot = options.chatBot;
-    }
-
-    private info(message: string): void {
-        if (this.loggingEnabled)
-            this.logger.info!(message);
-    }
-
-    private warn(message: string): void {
-        if (this.loggingEnabled)
-            this.logger.warn!(message);
-    }
-
-    private error(message: string): void {
-        if (this.loggingEnabled)
-            this.logger.error!(message);
     }
 
     private onOpen(event: any): void {
         this.state = States.CONNECTED;
         this.info(`Successfully connected to ${this.host} on port ${this.port}!`);
-        this.chatBot.connection = this.socket;
+        this.chatBot.setClient(this);
 
         if (this.password)
             this.socket.send(new AuthenticateCommand(this.password).getCommandJson());
@@ -143,14 +126,17 @@ class MccJsClient {
             if (data.error)
                 throw new Error(data.message);
 
-            if (data.success)
-                this.info(data.message);
-            else {
+            if (!data.success) {
                 this.error(data.message);
 
                 if (data.stackTrace)
                     this.error(data.stackTrace);
+
+                return;
             }
+
+            if (this.isMethodPresent("OnWsCommandResponse"))
+                this.chatBot.OnWsCommandResponse!(data.message);
 
             return;
         }
@@ -167,188 +153,49 @@ class MccJsClient {
         }
 
         // Handle MCC events
-        switch (event) {
-            case "OnMccCommandResponse":
-                this.chatBot.OnMccCommandResponse!(data.response);
-                break;
-
-            case "OnGameJoined":
-                this.chatBot.OnGameJoined!();
-                break;
-
-            case "OnBlockBreakAnimation":
-                this.chatBot.OnBlockBreakAnimation!(data.entity as Entity, data.location as Location, data.stage);
-                break;
-
-            case "OnEntityAnimation":
-                this.chatBot.OnEntityAnimation!(data.entity as Entity, data.animation);
-                break;
-
-            case "OnChatPrivate":
-                this.chatBot.OnChatPrivate!(data.sender, data.message, data.rawText);
-                break;
-
-            case "OnChatPublic":
-                this.chatBot.OnChatPublic!(data.sender, data.message, data.rawText);
-                break;
-
-            case "OnTeleportRequest":
-                this.chatBot.OnTeleportRequest!(data.sender, data.rawText);
-                break;
-
-            case "OnChatRaw":
-                this.chatBot.OnChatRaw!(data);
-                break;
-
-            case "OnDisconnect":
-                this.chatBot.OnDisconnect!(data.reason, data.message);
-                break;
-
-            case "OnPlayerProperty":
-                this.chatBot.OnPlayerProperty!(data);
-                break;
-
-            case "OnServerTpsUpdate":
-                this.chatBot.OnServerTpsUpdate!(data.tps);
-                break;
-
-            case "OnTimeUpdate":
-                this.chatBot.OnTimeUpdate!(data.worldAge, data.timeOfDay);
-                break;
-
-            case "OnEntityMove":
-                this.chatBot.OnEntityMove!(data as Entity);
-                break;
-
-            case "OnInternalCommand":
-                this.chatBot.OnInternalCommand!(data.command, data.parameters, data.result);
-                break;
-
-            case "OnEntitySpawn":
-                this.chatBot.OnEntitySpawn!(data as Entity);
-                break;
-
-            case "OnEntityDespawn":
-                this.chatBot.OnEntityDespawn!(data as Entity);
-                break;
-
-            case "OnHeldItemChange":
-                this.chatBot.OnHeldItemChange!(data.itemSlot);
-                break;
-
-            case "OnHealthUpdate":
-                this.chatBot.OnHealthUpdate!(data.health, data.food);
-                break;
-
-            case "OnExplosion":
-                this.chatBot.OnExplosion!(data.location as Location, data.strength, data.recordCount);
-                break;
-
-            case "OnSetExperience":
-                this.chatBot.OnSetExperience!(data.experienceBar, data.level, data.totalExperience);
-                break;
-
-
-            case "OnGamemodeUpdate":
-                this.chatBot.OnGamemodeUpdate!(data.playerName, data.uuid, data.gameMode);
-                break;
-
-            case "OnLatencyUpdate":
-                this.chatBot.OnLatencyUpdate!(data.playerName, data.uuid, data.latency);
-                break;
-
-            case "OnMapData":
-                this.chatBot.OnMapData!(data.mapId, data.trackingPosition, data.locked, data.iconCount);
-                break;
-
-            case "OnTradeList":
-                this.chatBot.OnTradeList!(data.windowId, data.trades, data.villagerInfo);
-                break;
-
-            case "OnTitle":
-                this.chatBot.OnTitle!(data.action, data.titleText, data.subtitleText, data.actionBarText, data.fadeIn, data.stay, data.rawJson);
-                break;
-
-            case "OnEntityEquipment":
-                this.chatBot.OnEntityEquipment!(data.entity as Entity, data.slot, data.item);
-                break;
-
-            case "OnEntityEffect":
-                this.chatBot.OnEntityEffect!(data.entity as Entity, data.effect, data.amplifier, data.duration, data.flags);
-                break;
-
-            case "OnScoreboardObjective":
-                this.chatBot.OnScoreboardObjective!(data.objectiveName, data.mode, data.objectiveValue, data.type, data.rawJson);
-                break;
-
-            case "OnUpdateScore":
-                this.chatBot.OnUpdateScore!(data.entityName, data.action, data.objectiveName, data.type);
-                break;
-
-            case "OnInventoryUpdate":
-                this.chatBot.OnInventoryUpdate!(data.inventoryId);
-                break;
-
-            case "OnInventoryOpen":
-                this.chatBot.OnInventoryOpen!(data.inventoryId);
-                break;
-
-            case "OnInventoryClose":
-                this.chatBot.OnInventoryClose!(data.inventoryId);
-                break;
-
-            case "OnPlayerJoin":
-                this.chatBot.OnPlayerJoin!(data.uuid, data.name);
-                break;
-
-            case "OnPlayerLeave":
-                this.chatBot.OnPlayerLeave!(data.uuid, data.name);
-                break;
-
-            case "OnDeath":
-                this.chatBot.OnDeath!();
-                break;
-
-            case "OnRespawn":
-                this.chatBot.OnRespawn!();
-                break;
-
-            case "OnEntityHealth":
-                this.chatBot.OnEntityHealth!(data.entity as Entity, data.health);
-                break;
-
-            case "OnEntityMetadata":
-                this.chatBot.OnEntityMetadata!(data.entity as Entity, data.metadata);
-                break;
-
-            case "OnPlayerStatus":
-                this.chatBot.OnPlayerStatus!(data.statusId);
-                break;
-
-            case "OnNetworkPacket":
-                this.chatBot.OnNetworkPacket!(data.packetId, data.isLogin, data.isInbound, data.packetData);
-                break;
-        }
+        this.chatBot.OnEvent!(event, data);
     }
 
     private isMethodPresent(methodName: string): boolean {
-        // @ts-ignore-start
-        return this.chatBot[methodName] && typeof this.chatBot[methodName] === 'function';
-        // @ts-ignore-end
+        if (!methodName || methodName && methodName.trim().length > 0)
+            return false;
+
+        methodName = methodName.trim();
+
+        const botClass = this.chatBot as { [key: string]: any };
+        return botClass[methodName] && typeof botClass[methodName] === 'function';
+    }
+
+    public info(message: string): void {
+        if (this.loggingEnabled)
+            this.logger.info!(message);
+    }
+
+    public warn(message: string): void {
+        if (this.loggingEnabled)
+            this.logger.warn!(message);
+    }
+
+    public error(message: string): void {
+        if (this.loggingEnabled)
+            this.logger.error!(message);
+    }
+
+    public getConnection(): WebSocket {
+        return this.socket;
+    }
+
+    public getExecutionTimeout(): number {
+        return this.executionTimeout;
     }
 
     public getState(): States {
         return this.state;
     }
 
-    public getLogger() {
+    public getLogger(): Logger {
         return this.logger;
     }
 }
 
-export {
-    MccJsClient,
-    Logger,
-    ChatBot,
-    States
-}
+export default MccJsClient;
