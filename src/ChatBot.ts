@@ -10,8 +10,8 @@ interface CommandResponse {
 }
 
 class ChatBot {
-    protected client?: MccJsClient;
-    protected responseQueue = new Array<CommandResponse>();
+    private client?: MccJsClient;
+    private responseQueue = new Array<CommandResponse>();
 
     public setClient(client: MccJsClient): void {
         this.client = client;
@@ -56,7 +56,7 @@ class ChatBot {
         this.client!.error(message);
     }
 
-    public async OnWsCommandResponse(response: string): Promise<void> {
+    public _OnWsCommandResponse(response: string) {
         try {
             const res = JSON.parse(response);
             this.responseQueue.push(res);
@@ -65,7 +65,7 @@ class ChatBot {
         }
     }
 
-    public OnEvent(event: string, data: any): void {
+    public _OnEvent(event: string, data: any): void {
         switch (event) {
             case "OnGameJoined":
                 this.OnGameJoined!();
@@ -227,49 +227,51 @@ class ChatBot {
     }
 
     // ChatBot Events
-    public async OnInitialize(): Promise<void> { }
-    public async OnDestroy(): Promise<void> { }
-    public async OnEventError(event: string, error: string): Promise<void> { }
-    public async OnUnhandledEvent(event: string, data: any): Promise<void> { }
-    public async OnGameJoined(): Promise<void> { }
-    public async OnBlockBreakAnimation(entity: Entity, location: Location, stage: number): Promise<void> { }
-    public async OnEntityAnimation(entity: Entity, animation: number): Promise<void> { }
-    public async OnChatPrivate(sender: string, message: string, rawText: string): Promise<void> { }
-    public async OnChatPublic(sender: string, message: string, rawText: string): Promise<void> { }
-    public async OnTeleportRequest(sender: string, rawText: string): Promise<void> { }
-    public async OnChatRaw(rawJson: any): Promise<void> { }
-    public async OnDisconnect(reason: string, message: string): Promise<void> { }
-    public async OnPlayerProperty(prop: any): Promise<void> { }
-    public async OnServerTpsUpdate(tps: number): Promise<void> { }
-    public async OnTimeUpdate(worldAge: number, timeOfDay: number): Promise<void> { }
-    public async OnEntityMove(entity: Entity): Promise<void> { }
-    public async OnInternalCommand(command: string, parameters: string, result: string): Promise<void> { }
-    public async OnEntitySpawn(entity: Entity): Promise<void> { }
-    public async OnEntityDespawn(entity: Entity): Promise<void> { }
-    public async OnHeldItemChange(itemSlot: number): Promise<void> { }
-    public async OnHealthUpdate(health: number, food: number): Promise<void> { }
-    public async OnExplosion(location: Location, strength: number, recordCount: number): Promise<void> { }
-    public async OnSetExperience(experienceBar: number, level: number, totalExperience: number): Promise<void> { }
-    public async OnGamemodeUpdate(playerName: string, uuid: string, gameMode: string): Promise<void> { }
-    public async OnLatencyUpdate(playerName: string, uuid: string, latency: number): Promise<void> { }
-    public async OnMapData(mapId: number, trackingPosition: number, locked: number, iconCount: number): Promise<void> { }
-    public async OnTradeList(windowId: number, trades: any, villagerInfo: any): Promise<void> { }
-    public async OnTitle(action: string, titleText: string, subtitleText: string, actionBarText: string, fadeIn: number, stay: number, rawJson: any): Promise<void> { }
-    public async OnEntityEquipment(entity: Entity, slot: number, item: Item): Promise<void> { }
-    public async OnEntityEffect(entity: Entity, effect: string, amplifier: number, duration: number, flags: number): Promise<void> { }
-    public async OnScoreboardObjective(objectiveName: string, mode: number, objectiveValue: string, type: number, rawJson: any): Promise<void> { }
-    public async OnUpdateScore(entityName: string, action: number, objectiveName: string, type: number): Promise<void> { }
-    public async OnInventoryUpdate(inventoryId: number): Promise<void> { }
-    public async OnInventoryOpen(inventoryId: number): Promise<void> { }
-    public async OnInventoryClose(inventoryId: number): Promise<void> { }
-    public async OnPlayerJoin(uuid: string, name: string): Promise<void> { }
-    public async OnPlayerLeave(uuid: string, name: string): Promise<void> { }
-    public async OnDeath(): Promise<void> { }
-    public async OnRespawn(): Promise<void> { }
-    public async OnEntityHealth(entity: Entity, health: number): Promise<void> { }
-    public async OnEntityMetadata(entity: Entity, metadata: any): Promise<void> { }
-    public async OnPlayerStatus(statusId: number): Promise<void> { }
-    public async OnNetworkPacket(packetId: number, isLogin: boolean, isInbound: boolean, packetData: any): Promise<void> { }
+    protected async OnInitialize(): Promise<void> { }
+    protected async OnDestroy(): Promise<void> { }
+    public async _OnEventError(event: string, error: string): Promise<void> { this.OnEventError(event, error); }
+    protected async OnEventError(event: string, error: string): Promise<void> { }
+    public async _OnUnhandledEvent(event: string, data: any): Promise<void> { this.OnUnhandledEvent(event, data); }
+    protected async OnUnhandledEvent(event: string, data: any): Promise<void> { }
+    protected async OnGameJoined(): Promise<void> { }
+    protected async OnBlockBreakAnimation(entity: Entity, location: Location, stage: number): Promise<void> { }
+    protected async OnEntityAnimation(entity: Entity, animation: number): Promise<void> { }
+    protected async OnChatPrivate(sender: string, message: string, rawText: string): Promise<void> { }
+    protected async OnChatPublic(sender: string, message: string, rawText: string): Promise<void> { }
+    protected async OnTeleportRequest(sender: string, rawText: string): Promise<void> { }
+    protected async OnChatRaw(rawJson: any): Promise<void> { }
+    protected async OnDisconnect(reason: string, message: string): Promise<void> { }
+    protected async OnPlayerProperty(prop: any): Promise<void> { }
+    protected async OnServerTpsUpdate(tps: number): Promise<void> { }
+    protected async OnTimeUpdate(worldAge: number, timeOfDay: number): Promise<void> { }
+    protected async OnEntityMove(entity: Entity): Promise<void> { }
+    protected async OnInternalCommand(command: string, parameters: string, result: string): Promise<void> { }
+    protected async OnEntitySpawn(entity: Entity): Promise<void> { }
+    protected async OnEntityDespawn(entity: Entity): Promise<void> { }
+    protected async OnHeldItemChange(itemSlot: number): Promise<void> { }
+    protected async OnHealthUpdate(health: number, food: number): Promise<void> { }
+    protected async OnExplosion(location: Location, strength: number, recordCount: number): Promise<void> { }
+    protected async OnSetExperience(experienceBar: number, level: number, totalExperience: number): Promise<void> { }
+    protected async OnGamemodeUpdate(playerName: string, uuid: string, gameMode: string): Promise<void> { }
+    protected async OnLatencyUpdate(playerName: string, uuid: string, latency: number): Promise<void> { }
+    protected async OnMapData(mapId: number, trackingPosition: number, locked: number, iconCount: number): Promise<void> { }
+    protected async OnTradeList(windowId: number, trades: any, villagerInfo: any): Promise<void> { }
+    protected async OnTitle(action: string, titleText: string, subtitleText: string, actionBarText: string, fadeIn: number, stay: number, rawJson: any): Promise<void> { }
+    protected async OnEntityEquipment(entity: Entity, slot: number, item: Item): Promise<void> { }
+    protected async OnEntityEffect(entity: Entity, effect: string, amplifier: number, duration: number, flags: number): Promise<void> { }
+    protected async OnScoreboardObjective(objectiveName: string, mode: number, objectiveValue: string, type: number, rawJson: any): Promise<void> { }
+    protected async OnUpdateScore(entityName: string, action: number, objectiveName: string, type: number): Promise<void> { }
+    protected async OnInventoryUpdate(inventoryId: number): Promise<void> { }
+    protected async OnInventoryOpen(inventoryId: number): Promise<void> { }
+    protected async OnInventoryClose(inventoryId: number): Promise<void> { }
+    protected async OnPlayerJoin(uuid: string, name: string): Promise<void> { }
+    protected async OnPlayerLeave(uuid: string, name: string): Promise<void> { }
+    protected async OnDeath(): Promise<void> { }
+    protected async OnRespawn(): Promise<void> { }
+    protected async OnEntityHealth(entity: Entity, health: number): Promise<void> { }
+    protected async OnEntityMetadata(entity: Entity, metadata: any): Promise<void> { }
+    protected async OnPlayerStatus(statusId: number): Promise<void> { }
+    protected async OnNetworkPacket(packetId: number, isLogin: boolean, isInbound: boolean, packetData: any): Promise<void> { }
 };
 
 export default ChatBot;

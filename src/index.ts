@@ -75,7 +75,7 @@ class MccJsClient {
             this.handleEvent(parsed.event, data);
         } catch (e) {
             if (this.isMethodPresent("OnEventError"))
-                this.chatBot.OnEventError!(event, `Error when parsing: '${event.data}'`);
+                this.chatBot._OnEventError!(event, `Error when parsing: '${event.data}'`);
         }
     }
 
@@ -136,7 +136,7 @@ class MccJsClient {
             }
 
             if (this.isMethodPresent("OnWsCommandResponse"))
-                this.chatBot.OnWsCommandResponse!(data.message);
+                this.chatBot._OnWsCommandResponse!(data.message);
 
             return;
         }
@@ -147,13 +147,13 @@ class MccJsClient {
         // or you're using an older version of MCC.js and want to catch new events without updating
         if (!this.isMethodPresent(event)) {
             if (this.isMethodPresent("OnUnhandledEvent"))
-                this.chatBot.OnUnhandledEvent!(event, data);
+                this.chatBot._OnUnhandledEvent!(event, data);
 
             return;
         }
 
         // Handle MCC events
-        this.chatBot.OnEvent!(event, data);
+        this.chatBot._OnEvent!(event, data);
     }
 
     private isMethodPresent(methodName: string): boolean {
