@@ -1,8 +1,8 @@
-import { Entity } from './MccTypes/Entity';
-import { Item } from './MccTypes/Item';
-import Location from './MccTypes/Location';
-import MccJsClient from '.';
-import Command from './Commands/Contract/Command';
+import { Entity } from './MccTypes/Entity.js';
+import { Item } from './MccTypes/Item.js';
+import Location from './MccTypes/Location.js';
+import MccJsClient from './index.js';
+import Command from './Commands/Contract/Command.js';
 
 interface CommandResponse {
     requestId: string;

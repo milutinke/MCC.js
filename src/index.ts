@@ -1,10 +1,11 @@
-import Options from './Options';
-import Logger from './Logger';
-import States from './States';
-import ConsoleLogger from "./ConsoleLogger";
-import ChatBot from './ChatBot';
-import AuthenticateCommand from './Commands/AuthenticateCommand';
-import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand';
+import Options from './Options.js';
+import Logger from './Logger.js';
+import States from './States.js';
+import ConsoleLogger from "./ConsoleLogger.js";
+import ChatBot from './ChatBot.js';
+import AuthenticateCommand from './Commands/AuthenticateCommand.js';
+import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand.js';
+import WebSocket from 'ws';
 
 class MccJsClient {
     private socket: any;
@@ -33,7 +34,7 @@ class MccJsClient {
         }
 
         if (options.password) {
-            if (options.password.trim().length) {
+            if (options.password.trim().length === 0) {
                 throw new Error("Please provide a valid password!");
             }
         }
