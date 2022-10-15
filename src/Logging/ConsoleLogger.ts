@@ -3,7 +3,8 @@ import Logger from "./Logger";
 enum LogType {
     Info = "info",
     Warn = "warn",
-    Error = "error"
+    Error = "error",
+    Debug = "debug"
 }
 
 class ConsoleLogger implements Logger {
@@ -17,6 +18,10 @@ class ConsoleLogger implements Logger {
 
     public error(message: string): void {
         this.log(LogType.Error, message);
+    }
+
+    public debug(message: string): void {
+        this.log(LogType.Debug, message);
     }
 
     private log(type: LogType, message: string): void {

@@ -56,6 +56,10 @@ class ChatBot {
         this.client!.error(message);
     }
 
+    protected debug(message: string): void {
+        this.client!.debug(message);
+    }
+
     public _OnWsCommandResponse(response: string) {
         try {
             const res = JSON.parse(response);
@@ -142,7 +146,6 @@ class ChatBot {
             case "OnSetExperience":
                 this.OnSetExperience!(data.experienceBar, data.level, data.totalExperience);
                 break;
-
 
             case "OnGamemodeUpdate":
                 this.OnGamemodeUpdate!(data.playerName, data.uuid, data.gameMode);

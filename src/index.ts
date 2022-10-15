@@ -1,16 +1,18 @@
 import Options from './Options.js';
-import Logger from './Logger.js';
+import Logger from './Logging/Logger.js';
 import States from './States.js';
-import ConsoleLogger from "./ConsoleLogger.js";
+import ConsoleLogger from "./Logging/ConsoleLogger.js";
 import ChatBot from './ChatBot.js';
 import AuthenticateCommand from './Commands/AuthenticateCommand.js';
 import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand.js';
 import WebSocket from 'ws';
+import LogLevel from './Logging/LogLevels.js';
 
 class MccJsClient {
     private socket: any;
     private state: States = States.DISCONNECTED;
     private loggingEnabled: boolean = false;
+    private logLevels: number = 0;
     private logger: Logger;
     private executionTimeout: number;
     private chatBot: ChatBot;
@@ -49,6 +51,7 @@ class MccJsClient {
         this.password = options.password;
         this.sessionName = options.sessionName;
         this.loggingEnabled = options.loggingEnabled;
+        this.logLevels = options.logLevels || LogLevel.Info | LogLevel.Warn | LogLevel.Warn;
         this.logger = options.logger || new ConsoleLogger();
         this.executionTimeout = options.executionTimeout || 15;
         this.chatBot = options.chatBot;
@@ -69,6 +72,8 @@ class MccJsClient {
     private onMessage(event: any): void {
         if (!event.data)
             return;
+
+        this.debug('Got a new event, trying to parse it...');
 
         try {
             const parsed = JSON.parse(event.data);
@@ -122,6 +127,8 @@ class MccJsClient {
         if (!event || (event && event.trim().length === 0))
             return;
 
+        this.debug(`Parsed event: ${event}, got data: ${data}`);
+
         // Internal websocket event
         if (event === 'OnWsCommandResponse') {
             if (data.error)
@@ -153,33 +160,36 @@ class MccJsClient {
             return;
         }
 
+        //if (!(event === "OnEntityMove" || event === "OnTimeUpdate" || event === "OnServerTpsUpdate"))
+        //this.info(`Got event "${event}" with data: ${data}`);
+
         // Handle MCC events
         this.chatBot._OnEvent!(event, data);
     }
 
     private isMethodPresent(methodName: string): boolean {
-        if (!methodName || methodName && methodName.trim().length > 0)
-            return false;
-
-        methodName = methodName.trim();
-
         const botClass = this.chatBot as { [key: string]: any };
-        return botClass[methodName] && typeof botClass[methodName] === 'function';
+        return typeof botClass[methodName] === 'function';
     }
 
     public info(message: string): void {
-        if (this.loggingEnabled)
+        if (this.loggingEnabled && (this.logLevels & LogLevel.Info))
             this.logger.info!(message);
     }
 
     public warn(message: string): void {
-        if (this.loggingEnabled)
+        if (this.loggingEnabled && (this.logLevels & LogLevel.Warn))
             this.logger.warn!(message);
     }
 
     public error(message: string): void {
-        if (this.loggingEnabled)
+        if (this.loggingEnabled && (this.logLevels & LogLevel.Error))
             this.logger.error!(message);
+    }
+
+    public debug(message: string): void {
+        if (this.loggingEnabled && (this.logLevels & LogLevel.Debug))
+            this.logger.debug!(message);
     }
 
     public getConnection(): WebSocket {

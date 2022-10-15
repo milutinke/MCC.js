@@ -1,5 +1,6 @@
-import Logger from './Logger';
+import Logger from './Logging/Logger';
 import ChatBot from './ChatBot';
+import LogLevel from './Logging/LogLevels';
 
 type Options = {
     host: string,
@@ -7,6 +8,7 @@ type Options = {
     password?: string,
     sessionName?: string,
     loggingEnabled: boolean,
+    logLevels: LogLevel,
     logger?: Logger,
     executionTimeout?: number,
     chatBot: ChatBot
