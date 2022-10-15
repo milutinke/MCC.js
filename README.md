@@ -2,7 +2,7 @@
 
 <img src="http://i.pics.rs/oo3pk.png" alt="Logo"/>
 
-## MCC.jS
+## MCC.JS
 
 </div>
 
