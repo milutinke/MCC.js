@@ -19,7 +19,7 @@ const client = new MccJsClient({
     port: 8043,
     password: "2233",
     loggingEnabled: true,
-    logLevels: LogLevel.Info | LogLevel.Warn | LogLevel.Error,
+    logLevels: LogLevel.Info | LogLevel.Warn | LogLevel.Error | LogLevel.Debug,
     chatBot: new TestChatBot(),
     sessionName: "Test Chat Bot",
 });

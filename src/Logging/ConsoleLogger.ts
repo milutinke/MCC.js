@@ -1,4 +1,4 @@
-import Logger from "./Logger";
+import Logger from "./Contract/Logger";
 
 enum LogType {
     Info = "info",

@@ -60,13 +60,8 @@ class ChatBot {
         this.client!.debug(message);
     }
 
-    public _OnWsCommandResponse(response: string) {
-        try {
-            const res = JSON.parse(response);
-            this.responseQueue.push(res);
-        } catch (e) {
-            this.error("Error when parsing a command response: " + response);
-        }
+    public _OnWsCommandResponse(response: any): void {
+        this.responseQueue.push(response as CommandResponse);
     }
 
     public _OnEvent(event: string, data: any): void {

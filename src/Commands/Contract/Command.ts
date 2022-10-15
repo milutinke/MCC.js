@@ -4,13 +4,12 @@ export default class Command {
 
     constructor(name: string) {
         this.name = name;
-        this.requestId = Math.random().toString(16).substring(2, 14);
+        this.requestId = Command.randomRequestId();
     }
 
     private getParameters(): Array<any> {
         const parameters: Array<any> = [];
 
-        // @ts-ignore-start
         Object.entries(this).forEach(entry => {
             const properyName: string = entry[0];
             const properyValue: any = entry[1];
@@ -20,7 +19,6 @@ export default class Command {
 
             parameters.push(properyValue);
         });
-        // @ts-ignore-end
 
         return parameters;
     }
@@ -35,5 +33,15 @@ export default class Command {
             requestId: this.requestId,
             parameters: this.getParameters()
         });
+    }
+
+    private static randomRequestId(): string {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+
+        for (let i = 0; i < 20; i++)
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+
+        return result;
     }
 }

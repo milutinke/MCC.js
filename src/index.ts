@@ -1,12 +1,13 @@
+// we use .js because TypeScript compiler is dumb
 import Options from './Options.js';
-import Logger from './Logging/Logger.js';
+import Logger from './Logging/Contract/Logger.js';
 import States from './States.js';
 import ConsoleLogger from "./Logging/ConsoleLogger.js";
 import ChatBot from './ChatBot.js';
 import AuthenticateCommand from './Commands/AuthenticateCommand.js';
 import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand.js';
 import WebSocket from 'ws';
-import LogLevel from './Logging/LogLevels.js';
+import LogLevel from './Logging/Contract/LogLevels.js';
 
 class MccJsClient {
     private socket: any;
@@ -53,7 +54,7 @@ class MccJsClient {
         this.loggingEnabled = options.loggingEnabled;
         this.logLevels = options.logLevels || LogLevel.Info | LogLevel.Warn | LogLevel.Warn;
         this.logger = options.logger || new ConsoleLogger();
-        this.executionTimeout = options.executionTimeout || 15;
+        this.executionTimeout = options.executionTimeout || 5;
         this.chatBot = options.chatBot;
     }
 
@@ -72,8 +73,6 @@ class MccJsClient {
     private onMessage(event: any): void {
         if (!event.data)
             return;
-
-        this.debug('Got a new event, trying to parse it...');
 
         try {
             const parsed = JSON.parse(event.data);
@@ -127,8 +126,6 @@ class MccJsClient {
         if (!event || (event && event.trim().length === 0))
             return;
 
-        this.debug(`Parsed event: ${event}, got data: ${data}`);
-
         // Internal websocket event
         if (event === 'OnWsCommandResponse') {
             if (data.error)
@@ -143,8 +140,8 @@ class MccJsClient {
                 return;
             }
 
-            if (this.isMethodPresent("OnWsCommandResponse"))
-                this.chatBot._OnWsCommandResponse!(data.message);
+            if (this.isMethodPresent("_OnWsCommandResponse"))
+                this.chatBot._OnWsCommandResponse!(data);
 
             return;
         }
@@ -159,9 +156,6 @@ class MccJsClient {
 
             return;
         }
-
-        //if (!(event === "OnEntityMove" || event === "OnTimeUpdate" || event === "OnServerTpsUpdate"))
-        //this.info(`Got event "${event}" with data: ${data}`);
 
         // Handle MCC events
         this.chatBot._OnEvent!(event, data);

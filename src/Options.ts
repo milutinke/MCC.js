@@ -1,6 +1,6 @@
-import Logger from './Logging/Logger';
+import Logger from './Logging/Contract/Logger';
 import ChatBot from './ChatBot';
-import LogLevel from './Logging/LogLevels';
+import LogLevel from './Logging/Contract/LogLevels';
 
 type Options = {
     host: string,
