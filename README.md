@@ -12,7 +12,7 @@ A **work in progress** JavaScript/TypeScript library for remote control and bot 
 
 ### NOTE
 
-This library is **work in progress** I do not guarante that it is complete and that it works, haven't done any proper testing yet.
+This library is **work in progress** I do not guarante that it is complete and that it works 100%, haven't done any proper testing yet.
 
 Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Client/pull/2126) that enables this has not yet been merged.
 
@@ -32,9 +32,11 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
 
     All useful [ChatBot](https://github.com/MCCTeam/Minecraft-Console-Client/blob/master/MinecraftClient/Scripting/ChatBot.cs) events are being correctly recieved and processed.
 
-#### Planned features / Roadmap
-
 -   [x] Asynchronous RPC
+
+    Ability to execute procedures (methods) remotely using Web Socket
+
+#### Planned features / Roadmap
 
     A part of the base work for this feature has been implemented already, it's currently being worked on.
 
@@ -52,7 +54,7 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
 
 -   [ ] Front end support
 
--   [ ] Deno support
+-   [ ] Deno version
 
 ### License
 
