@@ -6,8 +6,8 @@ import ConsoleLogger from "./Logging/ConsoleLogger.js";
 import ChatBot from './ChatBot.js';
 import AuthenticateCommand from './Commands/AuthenticateCommand.js';
 import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand.js';
-import WebSocket from 'ws';
 import LogLevel from './Logging/Contract/LogLevels.js';
+import WebSocket from 'ws';
 
 class MccJsClient {
     private socket: any;

@@ -33,6 +33,7 @@ class ChatBot {
 
                 if (commandResponse) {
                     clearInterval(interval);
+                    this.responseQueue = this.responseQueue.filter(response => response.requestId !== command.getRequestId());
                     return resolve(commandResponse.result);
                 }
 
