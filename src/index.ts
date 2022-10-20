@@ -51,6 +51,15 @@ class MccJsClient {
         this.logger = options.logger || new ConsoleLogger();
         this.executionTimeout = options.executionTimeout || 5;
         this.chatBot = options.chatBot;
+
+        // Send a disconnection signal so we do not get an exception message from the WebSocketSharp library used by the MCC
+        if (global !== undefined && global.process != undefined) {
+            process.on('exit', this.disconnect.bind(this));
+            process.on('SIGINT', this.disconnect.bind(this));
+            process.on('SIGUSR1', this.disconnect.bind(this));
+            process.on('SIGUSR2', this.disconnect.bind(this));
+            process.on('uncaughtException', this.disconnect.bind(this));
+        }
     }
 
     private onOpen(event: any): void {
