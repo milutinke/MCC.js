@@ -8,6 +8,8 @@ import AuthenticateCommand from './Commands/AuthenticateCommand.js';
 import ChangeSessionIdCommand from './Commands/ChangeSessionIdCommand.js';
 import LogLevel from './Logging/Contract/LogLevels.js';
 import WebSocket from 'ws';
+import ExitCodes from './DisconnectCodes.js';
+import DisconnectCodes from './DisconnectCodes.js';
 
 class MccJsClient {
     private socket: any;
@@ -17,6 +19,7 @@ class MccJsClient {
     private logger: Logger;
     private executionTimeout: number;
     private chatBot: ChatBot;
+    private lastDisconnectCode: DisconnectCodes = DisconnectCodes.NORMAL;
 
     private host: string;
     private port: number;
@@ -53,12 +56,12 @@ class MccJsClient {
         this.chatBot = options.chatBot;
 
         // Send a disconnection signal so we do not get an exception message from the WebSocketSharp library used by the MCC
+        // Currenlty only works for node
         if (global !== undefined && global.process != undefined) {
             process.on('exit', this.disconnect.bind(this));
             process.on('SIGINT', this.disconnect.bind(this));
             process.on('SIGUSR1', this.disconnect.bind(this));
             process.on('SIGUSR2', this.disconnect.bind(this));
-            process.on('uncaughtException', this.disconnect.bind(this));
         }
     }
 
@@ -83,6 +86,9 @@ class MccJsClient {
             const data = JSON.parse(parsed.data);
             this.handleEvent(parsed.event, data);
         } catch (e) {
+            let message = e instanceof Error ? e.message : String(e);
+            this.error(`Error when parsing: '${event.data}' > ${message}`);
+
             if (this.isMethodPresent("_OnEventError"))
                 this.chatBot._OnEventError!(event, `Error when parsing: '${event.data}'`);
         }
@@ -98,10 +104,12 @@ class MccJsClient {
 
     private onError(error: any): void {
         this.state = States.ERROR;
-        this.error(error.message || error);
+        this.error("erro: " + error.message || error);
     }
 
     public connect(): void {
+        this.lastDisconnectCode = DisconnectCodes.NORMAL;
+
         if (this.state == States.CONNECTED) {
             this.info("Reconnect requested, dropping the old connection...");
             if (this.socket) this.socket.close();
@@ -130,18 +138,23 @@ class MccJsClient {
         if (!event || (event && event.trim().length === 0))
             return;
 
+        this.debug(`Got event ("${event}"): ${JSON.stringify(data)}`);
+
         // Internal websocket event
         if (event === 'OnWsCommandResponse') {
             if (data.error)
                 throw new Error(data.message);
 
             if (!data.success) {
-                this.error(data.message);
+                const message = data.result ? data.result : (data.message ? data.message : JSON.stringify(data));
 
-                if (data.stackTrace)
-                    this.error(data.stackTrace);
+                if (message.includes('password') && (message.includes('valid') || message.includes('Incorrect'))) {
+                    this.error(message);
+                    this.lastDisconnectCode = DisconnectCodes.INVALID_PASSWORD;
+                    return this.disconnect();
+                }
 
-                return;
+                this.error(JSON.stringify(message));
             }
 
             if (this.isMethodPresent("_OnWsCommandResponse"))
@@ -204,6 +217,10 @@ class MccJsClient {
 
     public getLogger(): Logger {
         return this.logger;
+    }
+
+    public getLastDisconnectCode(): DisconnectCodes {
+        return this.lastDisconnectCode;
     }
 }
 

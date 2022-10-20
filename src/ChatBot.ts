@@ -149,7 +149,7 @@ class ChatBot {
                 break;
 
             case "OnChatPublic":
-                this.OnChatPublic(data.sender, data.message, data.rawText);
+                this.OnChatPublic(data.username, data.message, data.rawText);
                 break;
 
             case "OnTeleportRequest":
@@ -157,7 +157,7 @@ class ChatBot {
                 break;
 
             case "OnChatRaw":
-                this.OnChatRaw(data);
+                this.OnChatRaw(data.text, data.json);
                 break;
 
             case "OnDisconnect":
@@ -572,9 +572,9 @@ class ChatBot {
     protected async OnBlockBreakAnimation(entity: Entity, location: Location, stage: number): Promise<void> { }
     protected async OnEntityAnimation(entity: Entity, animation: number): Promise<void> { }
     protected async OnChatPrivate(sender: string, message: string, rawText: string): Promise<void> { }
-    protected async OnChatPublic(sender: string, message: string, rawText: string): Promise<void> { }
+    protected async OnChatPublic(username: string, message: string, rawText: string): Promise<void> { }
     protected async OnTeleportRequest(sender: string, rawText: string): Promise<void> { }
-    protected async OnChatRaw(rawJson: any): Promise<void> { }
+    protected async OnChatRaw(text: string, rawJson: any): Promise<void> { }
     protected async OnDisconnect(reason: string, message: string): Promise<void> { }
     protected async OnPlayerProperty(prop: any): Promise<void> { }
     protected async OnServerTpsUpdate(tps: number): Promise<void> { }
