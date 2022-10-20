@@ -63,6 +63,7 @@ import GetMaxChatMessageLengthCommand from './Commands/GetMaxChatMessageLengthCo
 import RespawnCommand from './Commands/RespawnCommand.js';
 import GetProtocolVersionCommand from './Commands/GetProtocolVersionCommand.js';
 import ProtocolVersion from './MccTypes/ProtocolVersion.js';
+import MapIcon from './MccTypes/MapIcon.js';
 
 interface CommandResponse {
     requestId: string;
@@ -78,7 +79,11 @@ class ChatBot {
     }
 
     // Internal
-    protected send(command: Command) {
+    protected send(text: string): void {
+        this.client!.getConnection().send(text);
+    }
+
+    private sendCommand<T>(command: Command): Promise<T> {
         this.client!.getConnection().send(command.getCommandJson());
 
         return new Promise((resolve, reject) => {
@@ -128,234 +133,244 @@ class ChatBot {
     public _OnEvent(event: string, data: any): void {
         switch (event) {
             case "OnGameJoined":
-                this.OnGameJoined!();
+                this.OnGameJoined();
                 break;
 
             case "OnBlockBreakAnimation":
-                this.OnBlockBreakAnimation!(data.entity as Entity, data.location as Location, data.stage);
+                this.OnBlockBreakAnimation(data.entity as Entity, data.location as Location, data.stage);
                 break;
 
             case "OnEntityAnimation":
-                this.OnEntityAnimation!(data.entity as Entity, data.animation);
+                this.OnEntityAnimation(data.entity as Entity, data.animation);
                 break;
 
             case "OnChatPrivate":
-                this.OnChatPrivate!(data.sender, data.message, data.rawText);
+                this.OnChatPrivate(data.sender, data.message, data.rawText);
                 break;
 
             case "OnChatPublic":
-                this.OnChatPublic!(data.sender, data.message, data.rawText);
+                this.OnChatPublic(data.sender, data.message, data.rawText);
                 break;
 
             case "OnTeleportRequest":
-                this.OnTeleportRequest!(data.sender, data.rawText);
+                this.OnTeleportRequest(data.sender, data.rawText);
                 break;
 
             case "OnChatRaw":
-                this.OnChatRaw!(data);
+                this.OnChatRaw(data);
                 break;
 
             case "OnDisconnect":
-                this.OnDisconnect!(data.reason, data.message);
+                this.OnDisconnect(data.reason, data.message);
                 break;
 
             case "OnPlayerProperty":
-                this.OnPlayerProperty!(data);
+                this.OnPlayerProperty(data);
                 break;
 
             case "OnServerTpsUpdate":
-                this.OnServerTpsUpdate!(data.tps);
+                this.OnServerTpsUpdate(data.tps);
                 break;
 
             case "OnTimeUpdate":
-                this.OnTimeUpdate!(data.worldAge, data.timeOfDay);
+                this.OnTimeUpdate(data.worldAge, data.timeOfDay);
                 break;
 
             case "OnEntityMove":
-                this.OnEntityMove!(data as Entity);
+                this.OnEntityMove(data as Entity);
                 break;
 
             case "OnInternalCommand":
-                this.OnInternalCommand!(data.command, data.parameters, data.result);
+                this.OnInternalCommand(data.command, data.parameters, data.result);
                 break;
 
             case "OnEntitySpawn":
-                this.OnEntitySpawn!(data as Entity);
+                this.OnEntitySpawn(data as Entity);
                 break;
 
             case "OnEntityDespawn":
-                this.OnEntityDespawn!(data as Entity);
+                this.OnEntityDespawn(data as Entity);
                 break;
 
             case "OnHeldItemChange":
-                this.OnHeldItemChange!(data.itemSlot);
+                this.OnHeldItemChange(data.itemSlot);
                 break;
 
             case "OnHealthUpdate":
-                this.OnHealthUpdate!(data.health, data.food);
+                this.OnHealthUpdate(data.health, data.food);
                 break;
 
             case "OnExplosion":
-                this.OnExplosion!(data.location as Location, data.strength, data.recordCount);
+                this.OnExplosion(data.location as Location, data.strength, data.recordCount);
                 break;
 
             case "OnSetExperience":
-                this.OnSetExperience!(data.experienceBar, data.level, data.totalExperience);
+                this.OnSetExperience(data.experienceBar, data.level, data.totalExperience);
                 break;
 
             case "OnGamemodeUpdate":
-                this.OnGamemodeUpdate!(data.playerName, data.uuid, data.gameMode);
+                this.OnGamemodeUpdate(data.playerName, data.uuid, data.gameMode);
                 break;
 
             case "OnLatencyUpdate":
-                this.OnLatencyUpdate!(data.playerName, data.uuid, data.latency);
+                this.OnLatencyUpdate(data.playerName, data.uuid, data.latency);
                 break;
 
             case "OnMapData":
-                this.OnMapData!(data.mapId, data.trackingPosition, data.locked, data.iconCount);
+                this.OnMapData(
+                    data.mapId,
+                    data.scale,
+                    data.trackingPosition,
+                    data.locked, data.icons as Array<MapIcon>,
+                    data.columnsUpdated,
+                    data.rowsUpdated,
+                    data.mapCoulmnX,
+                    data.mapRowZ,
+                    data.colors as Array<number>
+                );
                 break;
 
             case "OnTradeList":
-                this.OnTradeList!(data.windowId, data.trades, data.villagerInfo);
+                this.OnTradeList(data.windowId, data.trades, data.villagerInfo);
                 break;
 
             case "OnTitle":
-                this.OnTitle!(data.action, data.titleText, data.subtitleText, data.actionBarText, data.fadeIn, data.stay, data.rawJson);
+                this.OnTitle(data.action, data.titleText, data.subtitleText, data.actionBarText, data.fadeIn, data.stay, data.rawJson);
                 break;
 
             case "OnEntityEquipment":
-                this.OnEntityEquipment!(data.entity as Entity, data.slot, data.item);
+                this.OnEntityEquipment(data.entity as Entity, data.slot, data.item);
                 break;
 
             case "OnEntityEffect":
-                this.OnEntityEffect!(data.entity as Entity, data.effect, data.amplifier, data.duration, data.flags);
+                this.OnEntityEffect(data.entity as Entity, data.effect, data.amplifier, data.duration, data.flags);
                 break;
 
             case "OnScoreboardObjective":
-                this.OnScoreboardObjective!(data.objectiveName, data.mode, data.objectiveValue, data.type, data.rawJson);
+                this.OnScoreboardObjective(data.objectiveName, data.mode, data.objectiveValue, data.type, data.rawJson);
                 break;
 
             case "OnUpdateScore":
-                this.OnUpdateScore!(data.entityName, data.action, data.objectiveName, data.type);
+                this.OnUpdateScore(data.entityName, data.action, data.objectiveName, data.type);
                 break;
 
             case "OnInventoryUpdate":
-                this.OnInventoryUpdate!(data.inventoryId);
+                this.OnInventoryUpdate(data.inventoryId);
                 break;
 
             case "OnInventoryOpen":
-                this.OnInventoryOpen!(data.inventoryId);
+                this.OnInventoryOpen(data.inventoryId);
                 break;
 
             case "OnInventoryClose":
-                this.OnInventoryClose!(data.inventoryId);
+                this.OnInventoryClose(data.inventoryId);
                 break;
 
             case "OnPlayerJoin":
-                this.OnPlayerJoin!(data.uuid, data.name);
+                this.OnPlayerJoin(data.uuid, data.name);
                 break;
 
             case "OnPlayerLeave":
-                this.OnPlayerLeave!(data.uuid, data.name);
+                this.OnPlayerLeave(data.uuid, data.name);
                 break;
 
             case "OnDeath":
-                this.OnDeath!();
+                this.OnDeath();
                 break;
 
             case "OnRespawn":
-                this.OnRespawn!();
+                this.OnRespawn();
                 break;
 
             case "OnEntityHealth":
-                this.OnEntityHealth!(data.entity as Entity, data.health);
+                this.OnEntityHealth(data.entity as Entity, data.health);
                 break;
 
             case "OnEntityMetadata":
-                this.OnEntityMetadata!(data.entity as Entity, data.metadata);
+                this.OnEntityMetadata(data.entity as Entity, data.metadata);
                 break;
 
             case "OnPlayerStatus":
-                this.OnPlayerStatus!(data.statusId);
+                this.OnPlayerStatus(data.statusId);
                 break;
 
             case "OnNetworkPacket":
-                this.OnNetworkPacket!(data.packetId, data.isLogin, data.isInbound, data.packetData);
+                this.OnNetworkPacket(data.packetId, data.isLogin, data.isInbound, data.packetData);
                 break;
         }
     }
 
     // ChatBot commands
     protected async LogToConsole(message: string): Promise<boolean> {
-        return await this.send(new LogToConsoleCommand(message)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new LogToConsoleCommand(message));
     }
 
     protected async LogDebugToConsole(message: string): Promise<boolean> {
-        return await this.send(new LogDebugToConsoleCommand(message)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new LogDebugToConsoleCommand(message));
     }
 
     protected async LogToConsoleTranslated(message: string): Promise<boolean> {
-        return await this.send(new LogToConsoleTranslatedCommand(message)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new LogToConsoleTranslatedCommand(message));
     }
 
     protected async LogDebugToConsoleTranslated(message: string): Promise<boolean> {
-        return await this.send(new LogDebugToConsoleTranslatedCommand(message)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new LogDebugToConsoleTranslatedCommand(message));
     }
 
     protected async ReconnectToTheServer(extraAttempts: number, delaySeconds: number): Promise<boolean> {
-        return await this.send(new ReconnectToTheServerCommand(extraAttempts, delaySeconds)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new ReconnectToTheServerCommand(extraAttempts, delaySeconds));
     }
 
     protected async DisconnectAndExit(): Promise<boolean> {
-        return await this.send(new DisconnectAndExitCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new DisconnectAndExitCommand());
     }
 
     protected async RunScript(scriptName: string): Promise<boolean> {
-        return await this.send(new RunScriptCommand(scriptName)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new RunScriptCommand(scriptName));
     }
 
     protected async GetTerrainEnabled(): Promise<boolean> {
-        return await this.send(new GetTerrainEnabledCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new GetTerrainEnabledCommand());
     }
 
     protected async SetTerrainEnabled(enabled: boolean): Promise<boolean> {
-        return await this.send(new SetTerrainEnabledCommand(enabled)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SetTerrainEnabledCommand(enabled));
     }
 
     protected async GetEntityHandlingEnabled(): Promise<boolean> {
-        return await this.send(new GetEntityHandlingEnabledCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new GetEntityHandlingEnabledCommand());
     }
 
     protected async Sneak(toggle: boolean): Promise<boolean> {
-        return await this.send(new SneakCommand(toggle)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SneakCommand(toggle));
     }
 
     protected async SendEntityAction(actionType: EntityActionType): Promise<boolean> {
-        return await this.send(new SendEntityActionCommand(actionType)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SendEntityActionCommand(actionType));
     }
 
     protected async DigBlock(location: Location, swingArms: boolean = true, lookAtBlock: boolean = true): Promise<boolean> {
-        return await this.send(new DigBlockCommand(location.x, location.y, location.z, swingArms, lookAtBlock)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new DigBlockCommand(location.x, location.y, location.z, swingArms, lookAtBlock));
     }
 
     protected async SetSlot(slotId: number): Promise<boolean> {
-        return await this.send(new SetSlotCommand(slotId)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SetSlotCommand(slotId));
     }
 
     protected async GetWorld(): Promise<any> {
-        return await this.send(new GetWorldCommand()) as Promise<any>;
+        return await this.sendCommand<any>(new GetWorldCommand());
     }
 
     protected async GetEntities(): Promise<Array<Entity>> {
-        return await this.send(new GetEntitiesCommand()) as Promise<Array<Entity>>;
+        return await this.sendCommand<Array<Entity>>(new GetEntitiesCommand());
     }
 
     protected async GetPlayersLatency(): Promise<Array<any>> {
-        return await this.send(new GetPlayersLatencyCommand()) as Promise<Array<any>>;
+        return await this.sendCommand<Array<any>>(new GetPlayersLatencyCommand());
     }
 
     protected async GetCurrentLocation(): Promise<Location> {
-        return await this.send(new GetCurrentLocationCommand()) as Promise<Location>;
+        return await this.sendCommand<Location>(new GetCurrentLocationCommand());
     }
 
     protected async MoveToLocation(
@@ -364,8 +379,8 @@ class ChatBot {
         allowDirectTeleport: boolean = false,
         maxOffset: number = 0,
         minOfset: number = 0
-    ): Promise<Boolean> {
-        return await this.send(new MoveToLocationCommand(
+    ): Promise<boolean> {
+        return await this.sendCommand<boolean>(new MoveToLocationCommand(
             location.x,
             location.y,
             location.z,
@@ -373,59 +388,59 @@ class ChatBot {
             allowDirectTeleport,
             maxOffset,
             minOfset
-        )) as Promise<Boolean>;
+        ));
     }
 
-    protected async ClientIsMoving(): Promise<Boolean> {
-        return await this.send(new ClientIsMovingCommand()) as Promise<Boolean>;
+    protected async ClientIsMoving(): Promise<boolean> {
+        return await this.sendCommand<boolean>(new ClientIsMovingCommand());
     }
 
-    protected async LookAtLocation(location: Location): Promise<Boolean> {
-        return await this.send(new LookAtLocationCommand(location.x, location.y, location.z)) as Promise<Boolean>;
+    protected async LookAtLocation(location: Location): Promise<boolean> {
+        return await this.sendCommand<boolean>(new LookAtLocationCommand(location.x, location.y, location.z));
     }
 
     protected async GetTimestamp(): Promise<string> {
-        return await this.send(new GetTimestampCommand()) as Promise<string>;
+        return await this.sendCommand<string>(new GetTimestampCommand());
     }
 
     protected async GetServerPort(): Promise<number> {
-        return await this.send(new GetServerPortCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetServerPortCommand());
     }
 
     protected async GetServerHost(): Promise<string> {
-        return await this.send(new GetServerHostCommand()) as Promise<string>;
+        return await this.sendCommand<string>(new GetServerHostCommand());
     }
 
     protected async GetUsername(): Promise<string> {
-        return await this.send(new GetUsernameCommand()) as Promise<string>;
+        return await this.sendCommand<string>(new GetUsernameCommand());
     }
 
     protected async GetGamemode(): Promise<string> {
-        return await this.send(new GetGamemodeCommand()) as Promise<string>;
+        return await this.sendCommand<string>(new GetGamemodeCommand());
     }
 
     protected async GetYaw(): Promise<number> {
-        return await this.send(new GetYawCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetYawCommand());
     }
 
     protected async GetPitch(): Promise<number> {
-        return await this.send(new GetPitchCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetPitchCommand());
     }
 
     protected async GetUserUUID(): Promise<string> {
-        return await this.send(new GetUserUUIDCommand()) as Promise<string>;
+        return await this.sendCommand<string>(new GetUserUUIDCommand());
     }
 
     protected async GetOnlinePlayers(): Promise<any> {
-        return await this.send(new GetOnlinePlayersCommand()) as Promise<any>;
+        return await this.sendCommand<any>(new GetOnlinePlayersCommand());
     }
 
     protected async GetOnlinePlayersWithUUID(): Promise<any> {
-        return await this.send(new GetOnlinePlayersWithUUIDCommand()) as Promise<any>;
+        return await this.sendCommand(new GetOnlinePlayersWithUUIDCommand()) as Promise<any>;
     }
 
     protected async GetServerTPS(): Promise<number> {
-        return await this.send(new GetServerTPSCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetServerTPSCommand());
     }
 
     protected async InteractEntity(
@@ -433,19 +448,19 @@ class ChatBot {
         interactionType: InteractType,
         hand: Hand = Hand.MainHand
     ): Promise<boolean> {
-        return await this.send(new InteractEntityCommand(entityId, interactionType, hand)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new InteractEntityCommand(entityId, interactionType, hand));
     }
 
     protected async CreativeGive(slot: number, itemType: ItemType, count: number): Promise<boolean> {
-        return await this.send(new CreativeGiveCommand(slot, itemType, count)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new CreativeGiveCommand(slot, itemType, count));
     }
 
     protected async CreativeDelete(slot: number): Promise<boolean> {
-        return await this.send(new CreativeDeleteCommand(slot)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new CreativeDeleteCommand(slot));
     }
 
     protected async SendAnimation(hand: Hand = Hand.MainHand): Promise<boolean> {
-        return await this.send(new SendAnimationCommand(hand)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SendAnimationCommand(hand));
     }
 
     protected async SendPlaceBlock(
@@ -453,44 +468,44 @@ class ChatBot {
         direction: Direction,
         hand: Hand = Hand.MainHand
     ): Promise<boolean> {
-        return await this.send(new SendPlaceBlockCommand(
+        return await this.sendCommand<boolean>(new SendPlaceBlockCommand(
             location.x,
             location.y,
             location.z,
             direction,
-            hand)) as Promise<boolean>;
+            hand));
     }
 
     protected async UseItemInHand(): Promise<boolean> {
-        return await this.send(new UseItemInHandCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new UseItemInHandCommand());
     }
 
     protected async GetInventoryEnabled(): Promise<boolean> {
-        return await this.send(new GetInventoryEnabledCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new GetInventoryEnabledCommand());
     }
 
     protected async GetPlayerInventory(): Promise<any> {
-        return await this.send(new GetPlayerInventoryCommand()) as Promise<any>;
+        return await this.sendCommand(new GetPlayerInventoryCommand()) as Promise<any>;
     }
 
     protected async GetInventories(): Promise<Array<any>> {
-        return await this.send(new GetInventoriesCommand()) as Promise<Array<any>>;
+        return await this.sendCommand<Array<any>>(new GetInventoriesCommand());
     }
 
     protected async WindowAction(windowId: number, slotId: number, windowActionType: WindowActionType): Promise<boolean> {
-        return await this.send(new WindowActionCommand(windowId, slotId, windowActionType)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new WindowActionCommand(windowId, slotId, windowActionType));
     }
 
     protected async ChangeSlot(slotId: number): Promise<boolean> {
-        return await this.send(new ChangeSlotCommand(slotId)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new ChangeSlotCommand(slotId));
     }
 
     protected async GetCurrentSlot(): Promise<number> {
-        return await this.send(new GetCurrentSlotCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetCurrentSlotCommand());
     }
 
     protected async ClearInventories(): Promise<boolean> {
-        return await this.send(new ClearInventoriesCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new ClearInventoriesCommand());
     }
 
     protected async UpdateSign(
@@ -500,18 +515,18 @@ class ChatBot {
         line3: string,
         line4: string
     ): Promise<boolean> {
-        return await this.send(new UpdateSignCommand(
+        return await this.sendCommand<boolean>(new UpdateSignCommand(
             location.x,
             location.y,
             location.z,
             line1,
             line2,
             line3,
-            line4)) as Promise<boolean>;
+            line4));
     }
 
     protected async SelectTrade(selectedSlot: number): Promise<boolean> {
-        return await this.send(new SelectTradeCommand(selectedSlot)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new SelectTradeCommand(selectedSlot));
     }
 
     protected async UpdateCommandBlock(
@@ -520,30 +535,30 @@ class ChatBot {
         mode: CommandBlockMode,
         flags: CommandBlockFlags
     ): Promise<boolean> {
-        return await this.send(new UpdateCommandBlockCommand(
+        return await this.sendCommand<boolean>(new UpdateCommandBlockCommand(
             location.x,
             location.y,
             location.z,
             command,
             mode,
             flags
-        )) as Promise<boolean>;
+        ));
     }
 
     protected async CloseInventory(windowId: number): Promise<boolean> {
-        return await this.send(new CloseInventoryCommand(windowId)) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new CloseInventoryCommand(windowId));
     }
 
     protected async GetMaxChatMessageLength(): Promise<number> {
-        return await this.send(new GetMaxChatMessageLengthCommand()) as Promise<number>;
+        return await this.sendCommand<number>(new GetMaxChatMessageLengthCommand());
     }
 
     protected async Respawn(): Promise<boolean> {
-        return await this.send(new RespawnCommand()) as Promise<boolean>;
+        return await this.sendCommand<boolean>(new RespawnCommand());
     }
 
     protected async GetProtocolVersion(): Promise<ProtocolVersion> {
-        return await this.send(new GetProtocolVersionCommand()) as Promise<ProtocolVersion>;
+        return await this.sendCommand<ProtocolVersion>(new GetProtocolVersionCommand());
     }
 
     // ChatBot Events
@@ -574,7 +589,18 @@ class ChatBot {
     protected async OnSetExperience(experienceBar: number, level: number, totalExperience: number): Promise<void> { }
     protected async OnGamemodeUpdate(playerName: string, uuid: string, gameMode: string): Promise<void> { }
     protected async OnLatencyUpdate(playerName: string, uuid: string, latency: number): Promise<void> { }
-    protected async OnMapData(mapId: number, trackingPosition: number, locked: number, iconCount: number): Promise<void> { }
+    protected async OnMapData(
+        mapId: number,
+        scale: number,
+        trackingPosition: boolean,
+        locked: boolean,
+        icons: Array<MapIcon>,
+        columnsUpdated: number,
+        rowsUpdated: number,
+        mapCoulmnX: number,
+        mapRowZ: number,
+        colors: Array<number>
+    ): Promise<void> { }
     protected async OnTradeList(windowId: number, trades: any, villagerInfo: any): Promise<void> { }
     protected async OnTitle(action: string, titleText: string, subtitleText: string, actionBarText: string, fadeIn: number, stay: number, rawJson: any): Promise<void> { }
     protected async OnEntityEquipment(entity: Entity, slot: number, item: Item): Promise<void> { }
