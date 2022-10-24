@@ -75,6 +75,8 @@ class MccJsClient {
 
         if (this.sessionName)
             this.socket.send(new ChangeSessionIdCommand(this.sessionName).getCommandJson());
+
+        this.chatBot.OnInitialize();
     }
 
     private onMessage(event: any): void {
@@ -89,13 +91,15 @@ class MccJsClient {
             let message = e instanceof Error ? e.message : String(e);
             this.error(`Error when parsing: '${event.data}' > ${message}`);
 
-            if (this.isMethodPresent("_OnEventError"))
-                this.chatBot._OnEventError!(event, `Error when parsing: '${event.data}'`);
+            if (this.isMethodPresent("OnEventError"))
+                this.chatBot.OnEventError!(event, `Error when parsing: '${event.data}'`);
         }
     }
 
     private onClose(event: any): void {
         this.state = States.DISCONNECTED;
+        if (this.isMethodPresent("OnDestroy"))
+            this.chatBot.OnDestroy();
 
         if (event.wasClean)
             this.info("Connection cosed cleanly!");
@@ -157,8 +161,8 @@ class MccJsClient {
                 this.error(JSON.stringify(message));
             }
 
-            if (this.isMethodPresent("_OnWsCommandResponse"))
-                this.chatBot._OnWsCommandResponse!(data);
+            if (this.isMethodPresent("OnWsCommandResponse"))
+                this.chatBot.OnWsCommandResponse!(data);
 
             return;
         }
@@ -168,14 +172,14 @@ class MccJsClient {
         // or when you want to handle events in a custom way, 
         // or you're using an older version of MCC.js and want to catch new events without updating
         if (!this.isMethodPresent(event)) {
-            if (this.isMethodPresent("_OnUnhandledEvent"))
-                this.chatBot._OnUnhandledEvent!(event, data);
+            if (this.isMethodPresent("OnUnhandledEvent"))
+                this.chatBot.OnUnhandledEvent!(event, data);
 
             return;
         }
 
         // Handle MCC events
-        this.chatBot._OnEvent!(event, data);
+        this.chatBot.OnEvent!(event, data);
     }
 
     private isMethodPresent(methodName: string): boolean {

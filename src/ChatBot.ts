@@ -71,7 +71,7 @@ interface CommandResponse {
 }
 
 class ChatBot {
-    private client?: MccJsClient;
+    protected client?: MccJsClient;
     private responseQueue = new Array<CommandResponse>();
 
     public setClient(client: MccJsClient): void {
@@ -126,11 +126,16 @@ class ChatBot {
         this.client!.debug(message);
     }
 
-    public _OnWsCommandResponse(response: any): void {
+    public OnWsCommandResponse(response: any): void {
+        if (response.command) {
+            if (response.command === 'Authenticate')
+                return;
+        }
+
         this.responseQueue.push(response as CommandResponse);
     }
 
-    public _OnEvent(event: string, data: any): void {
+    public OnEvent(event: string, data: any): void {
         switch (event) {
             case "OnGameJoined":
                 this.OnGameJoined();
@@ -562,12 +567,10 @@ class ChatBot {
     }
 
     // ChatBot Events
-    protected async OnInitialize(): Promise<void> { }
-    protected async OnDestroy(): Promise<void> { }
-    public async _OnEventError(event: string, error: string): Promise<void> { this.OnEventError(event, error); }
-    protected async OnEventError(event: string, error: string): Promise<void> { }
-    public async _OnUnhandledEvent(event: string, data: any): Promise<void> { this.OnUnhandledEvent(event, data); }
-    protected async OnUnhandledEvent(event: string, data: any): Promise<void> { }
+    public async OnInitialize(): Promise<void> { }
+    public async OnDestroy(): Promise<void> { }
+    public async OnEventError(event: string, error: string): Promise<void> { }
+    public async OnUnhandledEvent(event: string, data: any): Promise<void> { }
     protected async OnGameJoined(): Promise<void> { }
     protected async OnBlockBreakAnimation(entity: Entity, location: Location, stage: number): Promise<void> { }
     protected async OnEntityAnimation(entity: Entity, animation: number): Promise<void> { }
