@@ -1,6 +1,6 @@
 import MccJsClient from "./dist/index.js";
 import ChatBot from "./dist/ChatBot.js";
-import LogLevel from "./dist/Logging/LogLevels.js";
+import LogLevel from "./dist/Logging/Contract/LogLevels.js";
 
 class TestChatBot extends ChatBot {
     async OnInitialize() {
@@ -70,6 +70,7 @@ class TestChatBot extends ChatBot {
 
     async OnHealthUpdate(health, food) {
         this.info(`[ON HEALTH CHANGE] Health: ${health} - Food: ${food}`);
+        this.send(`Health: ${health} - Food: ${food}`);
     }
 
     async OnExplosion(location, strength, recordcount) {

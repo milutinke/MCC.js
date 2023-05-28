@@ -72,7 +72,8 @@ interface CommandResponse {
 
 class ChatBot {
     protected client?: MccJsClient;
-    private responseQueue = new Array<CommandResponse>();
+    private responseQueue: Record<string, CommandResponse> = {};
+    private promises: Record<string, { resolve: (value: unknown) => void, reject: (reason?: any) => void }> = {};
 
     public setClient(client: MccJsClient): void {
         this.client = client;
@@ -86,27 +87,18 @@ class ChatBot {
     private sendCommand<T>(command: Command): Promise<T> {
         this.client!.getConnection().send(command.getCommandJson());
 
-        return new Promise((resolve, reject) => {
+        return new Promise<T>((resolve: (value: T | PromiseLike<T>) => void, reject) => {
             const executionTimeout = this.client!.getExecutionTimeout() * 1000;
-            let counter = 0;
-            let interval: any;
 
-            interval = setInterval(() => {
-                counter++;
+            this.promises[command.getRequestId()] = { resolve: resolve as any, reject };
 
-                const commandResponse = this.responseQueue.find(response => response.requestId === command.getRequestId());
-
-                if (commandResponse) {
-                    clearInterval(interval);
-                    this.responseQueue = this.responseQueue.filter(response => response.requestId !== command.getRequestId());
-                    return resolve(commandResponse.result);
+            setTimeout(() => {
+                if (this.promises[command.getRequestId()]) {
+                    delete this.promises[command.getRequestId()];
+                    delete this.responseQueue[command.getRequestId()];
+                    reject(new Error(`Command with requestId ${command.getRequestId()} timed out`));
                 }
-
-                if (counter >= executionTimeout) {
-                    clearInterval(interval);
-                    return reject();
-                }
-            }, 1);
+            }, executionTimeout);
         });
     }
 
@@ -132,7 +124,14 @@ class ChatBot {
                 return;
         }
 
-        this.responseQueue.push(response as CommandResponse);
+        this.responseQueue[response.requestId] = response as CommandResponse;
+
+        const promise = this.promises[response.requestId];
+        if (promise) {
+            promise.resolve(this.responseQueue[response.requestId].result);
+            delete this.promises[response.requestId];
+            delete this.responseQueue[response.requestId];
+        }
     }
 
     public OnEvent(event: string, data: any): void {
