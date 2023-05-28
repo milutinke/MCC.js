@@ -12,9 +12,7 @@ A **work in progress** JavaScript/TypeScript library for remote control and bot 
 
 ### NOTE
 
-This library is **work in progress** I do not guarante that it is complete and that it works 100%, haven't done any proper testing yet.
-
-Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Client/pull/2126) that enables this has not yet been merged.
+This library is **work in progress** I do not guarante that it is complete and that it works 100%.
 
 ### Current state and Planned features
 
@@ -36,11 +34,15 @@ Also, the [Web Socket Chat Bot](https://github.com/MCCTeam/Minecraft-Console-Cli
 
     Ability to execute procedures (methods) remotely using Web Socket
 
-#### Planned features / Roadmap
+-   [x] Auto-Reconnect
+
+    Auto reconnect to the Minecraft Console Client
+
+    > **NOTE:** This option does not re-connect the client to the server, this reconnects the Chat Bot written using MCC.JS to the Minecraft Console Client.
+
+#### Planned features / Roadmap / TODO
 
 A part of the base work for this feature has been implemented already, it's currently being worked on.
-
--   [ ] Auto-Reconnect
 
 -   [ ] Documentation
 

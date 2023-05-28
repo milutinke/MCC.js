@@ -20,6 +20,11 @@ class MccJsClient {
     private executionTimeout: number;
     private chatBot: ChatBot;
     private lastDisconnectCode: DisconnectCodes = DisconnectCodes.NORMAL;
+    private shouldReconnect: boolean;
+    private reconnectTimeout: number;
+    private reconnectAttempts: number;
+    private currentReconnectAttempt: number = 0;
+    private wasReconnecting: boolean = false;
 
     private host: string;
     private port: number;
@@ -54,21 +59,27 @@ class MccJsClient {
         this.logger = options.logger || new ConsoleLogger();
         this.executionTimeout = options.executionTimeout || 5;
         this.chatBot = options.chatBot;
+        this.chatBot.setClient(this);
+        this.shouldReconnect = options.reconnect || false;
+        this.reconnectTimeout = (options.reconnectTimeout || 30) * 1000;
+        this.reconnectAttempts = options.reconnectAttempts || 10;
 
         // Send a disconnection signal so we do not get an exception message from the WebSocketSharp library used by the MCC
         // Currenlty only works for node
         if (global !== undefined && global.process != undefined) {
-            process.on('exit', this.disconnect.bind(this));
-            process.on('SIGINT', this.disconnect.bind(this));
-            process.on('SIGUSR1', this.disconnect.bind(this));
-            process.on('SIGUSR2', this.disconnect.bind(this));
+            process.on('exit', this.handleKillSignal.bind(this));
+            process.on('SIGINT', this.handleKillSignal.bind(this));
+            process.on('SIGUSR1', this.handleKillSignal.bind(this));
+            process.on('SIGUSR2', this.handleKillSignal.bind(this));
         }
     }
 
     private onOpen(event: any): void {
+        this.wasReconnecting = false;
         this.state = States.CONNECTED;
         this.info(`Successfully connected to ${this.host} on port ${this.port}!`);
         this.chatBot.setClient(this);
+        this.currentReconnectAttempt = 0;
 
         if (this.password)
             this.socket.send(new AuthenticateCommand(this.password).getCommandJson());
@@ -101,9 +112,22 @@ class MccJsClient {
         if (this.isMethodPresent("OnDestroy"))
             this.chatBot.OnDestroy();
 
-        if (event.wasClean)
-            this.info("Connection cosed cleanly!");
-        else this.warn("Connection died!");
+        this[event.wasClean ? "info" : "warn"](
+            event.wasClean ? "Connection closed cleanly!" : "Connection died!");
+
+        if (this.lastDisconnectCode != DisconnectCodes.INVALID_PASSWORD && this.shouldReconnect) {
+            if (this.currentReconnectAttempt < this.reconnectAttempts) {
+                setTimeout(this.connect.bind(this), this.reconnectTimeout);
+                this.currentReconnectAttempt++;
+
+                if (this.wasReconnecting)
+                    this.info(`Failed to reconnect, attempting ${(this.reconnectAttempts - this.currentReconnectAttempt) + 1} times more!`);
+
+                this.info(`Reconnecting in ${this.reconnectTimeout / 1000} seconds!`);
+                this.wasReconnecting = true;
+            } else
+                this.info("Maximum reconnect attempts reached. Abandoning reconnection.");
+        }
     }
 
     private onError(error: any): void {
@@ -136,6 +160,15 @@ class MccJsClient {
             this.socket.close();
 
         this.info("Disconnected!");
+    }
+
+    private handleKillSignal(signal: string): void {
+        if (typeof signal === "number" && signal === 0)
+            return;
+
+        this.info(`Received ${signal}, disconnecting...`);
+        this.disconnect();
+        process.exit();
     }
 
     private handleEvent(event: string, data: any): void {

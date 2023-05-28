@@ -11,7 +11,10 @@ type Options = {
     logLevels: LogLevel,
     logger?: Logger,
     executionTimeout?: number,
-    chatBot: ChatBot
+    chatBot: ChatBot,
+    reconnect?: boolean,
+    reconnectTimeout?: number,
+    reconnectAttempts?: number;
 };
 
 export default Options;

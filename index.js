@@ -170,6 +170,9 @@ const client = new MccJsClient({
     logLevels: LogLevel.Info | LogLevel.Warn | LogLevel.Error,
     chatBot: new TestChatBot(),
     sessionName: "Test Chat Bot",
+    reconnect: true,
+    reconnectTimeout: 15,
+    reconnectAttempts: 3
 });
 
 client.connect();
