@@ -17,10 +17,13 @@ if(await GetTerrainEnabled())
 ## - `LogToConsole`
 
 **Description:**
-Log stuff in to the MCC console
+
+Log stuff in to the MCC console.
+
 **Parameters:**
 
 - `message`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -28,11 +31,13 @@ Log stuff in to the MCC console
 ## - `LogDebugToConsole`
 
 **Description:**
-Log stuff in to the MCC debug console channel
+
+Log stuff in to the MCC debug console channel.
 
 **Parameters:**
 
 - `message`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -40,11 +45,13 @@ Log stuff in to the MCC debug console channel
 ## - `LogToConsoleTranslated`
 
 **Description:**
-Log a translated string in to the MCC console
+
+Log a translated string in to the MCC console.
 
 **Parameters:**
 
 - `message`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -52,11 +59,13 @@ Log a translated string in to the MCC console
 ## - `LogDebugToConsoleTranslated`
 
 **Description:**
-Log a translated string in to the MCC debug console channel
+
+Log a translated string in to the MCC debug console channel.
 
 **Parameters:**
 
 - `message`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -64,13 +73,17 @@ Log a translated string in to the MCC debug console channel
 ## - `ReconnectToTheServer`
 
 **Description:**
-Reconnect to the server the MCC is connected to
+
+Reconnect to the server the MCC is connected to.
 
 **Parameters:**
 
 - `extraAttempts`
+
   **Type:** `number`
+
 - `delaySeconds`
+
   **Type:** `number`
 
 **Return type:** `boolean`
@@ -78,7 +91,8 @@ Reconnect to the server the MCC is connected to
 ## - `DisconnectAndExit`
 
 **Description:**
-Disconnect MCC from the server and close the program
+
+Disconnect MCC from the server and close the program.
 
 **Parameters:**
 
@@ -87,11 +101,13 @@ Disconnect MCC from the server and close the program
 ## - `RunScript`
 
 **Description:**
-Run a MCC C# script
+
+Run a MCC C# script.
 
 **Parameters:**
 
 - `scriptName`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -99,6 +115,7 @@ Run a MCC C# script
 ## - `GetTerrainEnabled`
 
 **Description:**
+
 Check if the Terrain Handling is enabled.
 
 **Parameters:**
@@ -110,11 +127,13 @@ Check if the Terrain Handling is enabled.
 ## - `SetTerrainEnabled`
 
 **Description:**
-Try enabling the Terrain Handling
+
+Try enabling the Terrain Handling.
 
 **Parameters:**
 
 - `enabled`
+
   **Type:** `boolean`
 
 **Return type:** `boolean`
@@ -122,6 +141,7 @@ Try enabling the Terrain Handling
 ## - `GetEntityHandlingEnabled`
 
 **Description:**
+
 Check if the Entity Handling is enabled.
 
 **Parameters:**
@@ -133,21 +153,25 @@ Check if the Entity Handling is enabled.
 ## - `Sneak`
 
 **Description:**
-Toggle sneak
+
+Toggle sneak.
 
 **Parameters:**
 
 - `toggle`
+
   **Type:** `boolean`
 
 ## - `SendEntityAction`
 
 **Description:**
-Send an entity action
+
+Send an entity action.
 
 **Parameters:**
 
 - `actionType`
+
   **Type:** [`EntityActionType`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/EntityActionType.ts)
 
 **Return type:** `boolean`
@@ -155,15 +179,21 @@ Send an entity action
 ## - `DigBlock`
 
 **Description:**
-Dig a block in the world
+
+Dig a block in the world.
 
 **Parameters:**
 
 - `location`
+
   **Type:** `Location`
+
 - `swingArms`
+
   **Type:** `boolean`
+
 - `lookAtBlock`
+
   **Type:** `boolean`
 
 **Return type:** `boolean`
@@ -171,11 +201,13 @@ Dig a block in the world
 ## - `SetSlot`
 
 **Description:**
-Set the current active hot bar slot
+
+Set the current active hot bar slot.
 
 **Parameters:**
 
 - `slotId`
+
   **Type:** `number`
 
 **Return type:** `boolean`
@@ -183,7 +215,8 @@ Set the current active hot bar slot
 ## - `GetWorld`
 
 **Description:**
-Get world info
+
+Get world info.
 
 **Parameters:**
 
@@ -194,7 +227,8 @@ Get world info
 ## - `GetEntities`
 
 **Description:**
-Get a list of entities around the player
+
+Get a list of entities around the player.
 
 **Parameters:**
 
@@ -205,7 +239,8 @@ Get a list of entities around the player
 ## - `GetPlayersLatency`
 
 **Description:**
-Get a list of players and their latencies
+
+Get a list of players and their latencies.
 
 **Parameters:**
 
@@ -216,7 +251,8 @@ Get a list of players and their latencies
 ## - `GetCurrentLocation`
 
 **Description:**
-Get the current bot location in the world
+
+Get the current bot location in the world.
 
 **Parameters:**
 
@@ -227,31 +263,46 @@ Get the current bot location in the world
 ## - `MoveToLocation`
 
 **Description:**
-Move to a location in the world
+
+Move to a location in the world.
 
 **Parameters:**
 
 - `location`
+
   **Type:** [`Location`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Location.ts)
+
 - `allowUnsafe`
+
   **Type:** `boolean`
-  **Description:** Allow the bot to go through unsafe areas, warning: it might get hurt
+
+  **Description:** Allow the bot to go through unsafe areas, warning: it might get hurt.
+
 - `allowDirectTeleport`
+
   **Type:** `boolean`
+
   **Description:** Allow bot to send a teleport packet.
+
 - `maxOffset`
+
   **Type:** `number`
-  **Description:** Maximum number of blocks from the location where the bot can stop
+
+  **Description:** Maximum number of blocks from the location where the bot can stop.
+
 - `minOfset`
+
   **Type:** `number`
-  **Description:** Minimum number of blocks from the location where the bot can stop
+
+  **Description:** Minimum number of blocks from the location where the bot can stop.
 
 **Return type:** `boolean`
 
 ## - `ClientIsMoving`
 
 **Description:**
-Check if the bot is currently moving
+
+Check if the bot is currently moving.
 
 **Parameters:**
 
@@ -262,11 +313,13 @@ Check if the bot is currently moving
 ## - `LookAtLocation`
 
 **Description:**
-Make the bot look at a specific location
+
+Make the bot look at a specific location.
 
 **Parameters:**
 
 - `location`
+
   **Type:** [`Location`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Location.ts)
 
 **Return type:** `boolean`
@@ -274,7 +327,9 @@ Make the bot look at a specific location
 ## - `GetTimestamp`
 
 **Description:**
-Get current time in `yyyy-MM-dd HH:mm:ss` format
+
+Get current time in `yyyy-MM-dd HH:mm:ss` format.
+
 **Parameters:**
 
 - No parameters
@@ -284,7 +339,8 @@ Get current time in `yyyy-MM-dd HH:mm:ss` format
 ## - `GetServerPort`
 
 **Description:**
-Get the current server port
+
+Get the current server port.
 
 **Parameters:**
 
@@ -295,7 +351,8 @@ Get the current server port
 ## - `GetServerHost`
 
 **Description:**
-Get the current server IPv4 address
+
+Get the current server IPv4 address.
 
 **Parameters:**
 
@@ -306,7 +363,8 @@ Get the current server IPv4 address
 ## - `GetUsername`
 
 **Description:**
-Get current logged in account username
+
+Get current logged in account username.
 
 **Parameters:**
 
@@ -317,7 +375,8 @@ Get current logged in account username
 ## - `GetGamemode`
 
 **Description:**
-Get the current game mode in which the bot is
+
+Get the current game mode in which the bot is.
 
 **Parameters:**
 
@@ -328,7 +387,8 @@ Get the current game mode in which the bot is
 ## - `GetYaw`
 
 **Description:**
-Get current bot yaw
+
+Get current bot yaw.
 
 **Parameters:**
 
@@ -339,17 +399,20 @@ Get current bot yaw
 ## - `GetPitch`
 
 **Description:**
-Get the current bot pitch
+
+Get the current bot pitch.
 
 **Parameters:**
 
 - No parameters
+
 - **Return type:** `number`
 
 ## - `GetUserUUID`
 
 **Description:**
-Get the UUID of the current account
+
+Get the UUID of the current account.
 
 **Parameters:**
 
@@ -360,7 +423,8 @@ Get the UUID of the current account
 ## - `GetOnlinePlayers`
 
 **Description:**
-Get a list of online players on the server
+
+Get a list of online players on the server.
 
 **Parameters:**
 
@@ -371,7 +435,8 @@ Get a list of online players on the server
 ## - `GetOnlinePlayersWithUUID`
 
 **Description:**
-Get a list of online players on the server with their nicknames and UUIDs
+
+Get a list of online players on the server with their nicknames and UUIDs.
 
 **Parameters:**
 
@@ -382,7 +447,8 @@ Get a list of online players on the server with their nicknames and UUIDs
 ## - `GetServerTPS`
 
 **Description:**
-Get the current server TPS
+
+Get the current server TPS.
 
 **Parameters:**
 
@@ -393,17 +459,25 @@ Get the current server TPS
 ## - `InteractEntity`
 
 **Description:**
-Interact with an entity
+
+Interact with an entity.
 
 **Parameters:**
 
 - `entityId`
+
   **Type:** `number`
+
 - `interactionType`
+
   **Type:** [`InteractType`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/InteractType.ts)
+
 - `hand`
+
   **Type:** [`Hand`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Hand.ts)
+
   **Default value:** `Hand.MainHand`
+
   You can omit this parameter if you want to interact with the main hand.
 
 **Return type:** `boolean`
@@ -411,44 +485,59 @@ Interact with an entity
 ## - `CreativeGive`
 
 **Description:**
-Give an item from the Creative Inventory
+
+Give an item from the Creative Inventory.
 
 **Parameters:**
 
 - `slot`
+
   **Type:** `number`
-  **Description:** The slot id in which the items will be added to
+
+  **Description:** The slot id in which the items will be added to.
+
 - `itemType`
+
   **Type:** [`ItemType`](https://github.com/milutinke/MCC.js/blob/dc5ccfecb65284f021c94c8381c3d7fb4f36a2c3/src/MccTypes/Item.ts#L1)
+
 - `count`
+
   **Type:** `number`
-  **Description** The number of items you want to give
+
+  **Description** The number of items you want to give.
 
 **Return type:** `boolean`
 
 ## - `CreativeDelete`
 
 **Description:**
-Clear an inventory slot of items in the Creative Mode
+
+Clear an inventory slot of items in the Creative Mode.
 
 **Parameters:**
 
 - `slot`
+
   **Type:** `number`
-  **Description:** The slot id from which the items will be deleted from
+
+  **Description:** The slot id from which the items will be deleted from.
 
 **Return type:** `boolean`
 
 ## - `SendAnimation`
 
 **Description:**
-Send an animation, for example a hand swing
+
+Send an animation, for example a hand swing.
 
 **Parameters:**
 
 - `hand`
+
   **Type:** [`Hand`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Hand.ts)
+
   **Default value:** `Hand.MainHand`
+
   You can omit this parameter if you want to interact with the main hand.
 
 **Return type:** `boolean`
@@ -456,15 +545,21 @@ Send an animation, for example a hand swing
 ## - `SendPlaceBlock`
 
 **Description:**
-Place a block somewhere in the world
+
+Place a block somewhere in the world.
 
 **Parameters:**
 
 - `location`
+
   **Type:** [`Location`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Location.ts)
+
 - `direction`
+
   **Type:** [`Direction`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Direction.ts)
+
 - `hand`
+
   **Type:** [`Hand`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Hand.ts)
 
 **Return type:** `boolean`
@@ -472,7 +567,8 @@ Place a block somewhere in the world
 ## - `UseItemInHand`
 
 **Description:**
-Use an item in the hand
+
+Use an item in the hand.
 
 **Parameters:**
 
@@ -483,7 +579,8 @@ Use an item in the hand
 ## - `GetInventoryEnabled`
 
 **Description:**
-Check if the inventory is enabled
+
+Check if the inventory is enabled.
 
 **Parameters:**
 
@@ -494,7 +591,8 @@ Check if the inventory is enabled
 ## - `GetPlayerInventory`
 
 **Description:**
-Get the items in the player inventory
+
+Get the items in the player inventory.
 
 **Parameters:**
 
@@ -505,7 +603,8 @@ Get the items in the player inventory
 ## - `GetInventories`
 
 **Description:**
-Get opened inventories list and items in them
+
+Get opened inventories list and items in them.
 
 **Parameters:**
 
@@ -516,17 +615,25 @@ Get opened inventories list and items in them
 ## - `WindowAction`
 
 **Description:**
-Send an inventory action, for example a click
+
+Send an inventory action, for example a click.
 
 **Parameters:**
 
 - `windowId`
+
   **Type:** `number`
+
   **Description:** An id of an inventory
+
 - `slotId`
+
   **Type:** `number`
+
   **Description** An id of an inventory slot
+
 - `windowActionType`
+
   **Type:** [`WindowActionType`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/WindowActionType.ts)
 
 **Return type:** `boolean`
@@ -534,48 +641,67 @@ Send an inventory action, for example a click
 ## - `ChangeSlot`
 
 **Description:**
-Change the currently selected hot bar slot
+
+Change the currently selected hot bar slot.
 
 **Parameters:** - `slotId`
+
 **Type:** `number`
-**Description** An id of an inventory slot
+
+**Description** An id of an inventory slot.
 
 **Return type:** `boolean`
 
 ## - `GetCurrentSlot`
 
 **Description:**
-Get the currently selected hot bar slot
 
-**Parameters:** - No Parameters
+Get the currently selected hot bar slot.
+
+**Parameters:** 
+
+- No Parameters
 
 **Return type:** `number`
 
 ## - `ClearInventories`
 
 **Description:**
-Clear the list of opened inventories
 
-**Parameters:** - No Parameters
+Clear the list of opened inventories.
+
+**Parameters:** 
+
+- No Parameters
 
 **Return type:** `boolean`
 
 ## - `UpdateSign`
 
 **Description:**
-Update the text in signs
+
+Update the text in signs.
 
 **Parameters:**
 
 - `location`
+
   **Type:** [`Location`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Location.ts)
+
 - `line1`
+
   **Type:** `string`
+
 - `line2`
+
   **Type:** `string`
+
 - `line3`
+
   **Type:** `string`
+
 - `line4`
+
   **Type:** `string`
 
 **Return type:** `boolean`
@@ -583,11 +709,12 @@ Update the text in signs
 ## - `SelectTrade`
 
 **Description:**
-Select a villager trade
+Select a villager trade.
 
 **Parameters:**
 
 - `selectedSlot`
+
   **Type:** `number`
 
 **Return type:** `boolean`
@@ -595,17 +722,25 @@ Select a villager trade
 ## - `UpdateCommandBlock`
 
 **Description:**
+
 Update the command block.
 
 **Parameters:**
 
 - `location`
+
   **Type:** [`Location`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/Location.ts)
+
 - `command`
+
   **Type:** `string`
+
 - `mode`
+
   **Type:** [`CommandBlockMode`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/CommandBlockMode.ts)
+
 - `flags`
+
   **Type:** [`CommandBlockFlags`](https://github.com/milutinke/MCC.js/blob/master/src/MccTypes/CommandBlockFlags.ts)
 
 **Return type:** `boolean`
@@ -613,12 +748,15 @@ Update the command block.
 ## - `CloseInventory`
 
 **Description:**
-Close an inventory id
+
+Close an inventory id.
 
 **Parameters:**
 
 - `windowId`
+
   **Type:** `number`
+
   **Description:** Inventory Id
 
 **Return type:** `boolean`
@@ -626,29 +764,35 @@ Close an inventory id
 ## - `GetMaxChatMessageLength`
 
 **Description:**
-Get the max chat message length
+
+Get the max chat message length.
 
 **Parameters:**
-No parameters
+
+- No parameters
 
 **Return type:** `number`
 
 ## - `Respawn`
 
 **Description:**
-Respawn the bot when it's dead
+
+Respawn the bot when it's dead.
 
 **Parameters:**
-No parameters
+
+- No parameters
 
 **Return type:** `boolean`
 
 ## - `GetProtocolVersion`
 
 **Description:**
+
 Get the current protocol version
 
 **Parameters:**
+
 No parameters
 
 **Return type:** `number`
